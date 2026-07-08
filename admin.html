@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NLP Admin Portal - District Level</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+
+        /* Loading spinner */
+        .loader {
+            border-top-color: #4f46e5;
+            -webkit-animation: spinner 1.5s linear infinite;
+            animation: spinner 1.5s linear infinite;
+        }
+        @keyframes spinner {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Top Navigation -->
+    <nav class="bg-slate-900 shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-rose-600 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-md">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <span class="font-bold text-xl text-white tracking-tight">NLP Admin Dashboard</span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span id="auth-status" class="text-xs font-medium px-3 py-1 bg-slate-800 text-slate-300 rounded-full flex items-center gap-2 border border-slate-700">
+                        <i class="fa-solid fa-circle-notch fa-spin"></i> Initializing...
+                    </span>
+                    <button id="btn-logout" class="hidden text-sm text-slate-300 hover:text-white transition-colors bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-lg border border-slate-700">
+                        <i class="fa-solid fa-right-from-bracket mr-2"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN APP CONTAINER -->
+    <main class="flex-grow w-full max-w-7xl mx-auto px-4 py-8 relative">
+
+        <!-- 1. LOGIN SECTION -->
+        <section id="section-login" class="max-w-md mx-auto mt-10 animate-fade-in-up">
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">
+                <div class="bg-rose-600 px-6 py-6 text-center">
+                    <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center text-white text-3xl mx-auto mb-3">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-white">District Admin Login</h2>
+                    <p class="text-rose-100 text-sm mt-1">Select your district and enter the PIN</p>
+                </div>
+                
+                <div class="p-8">
+                    <form id="login-form" class="space-y-5">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">District</label>
+                            <div class="relative">
+                                <select id="login-district" required class="w-full pl-4 pr-10 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-rose-500 appearance-none bg-slate-50 font-medium text-slate-700 shadow-sm transition-shadow">
+                                    <option value="" disabled selected>Select District...</option>
+                                    <option value="ANGUL">Angul</option>
+                                    <option value="BALANGIR">Balangir</option>
+                                    <option value="BALASORE">Balasore</option>
+                                    <option value="BARGARH">Bargarh</option>
+                                    <option value="BHADRAK">Bhadrak</option>
+                                    <option value="BOUDH">Boudh</option>
+                                    <option value="CUTTACK">Cuttack</option>
+                                    <option value="DEOGARH">Deogarh</option>
+                                    <option value="DHENKANAL">Dhenkanal</option>
+                                    <option value="GAJAPATI">Gajapati</option>
+                                    <option value="GANJAM">Ganjam</option>
+                                    <option value="JAGATSINGHPUR">Jagatsinghpur</option>
+                                    <option value="JAJPUR">Jajpur</option>
+                                    <option value="JHARSUGUDA">Jharsuguda</option>
+                                    <option value="KALAHANDI">Kalahandi</option>
+                                    <option value="KANDHAMAL">Kandhamal</option>
+                                    <option value="KENDRAPARA">Kendrapara</option>
+                                    <option value="KEONJHAR">Keonjhar</option>
+                                    <option value="KHORDHA">Khordha</option>
+                                    <option value="KORAPUT">Koraput</option>
+                                    <option value="MALKANGIRI">Malkangiri</option>
+                                    <option value="MAYURBHANJ">Mayurbhanj</option>
+                                    <option value="NABARANGPUR">Nabarangpur</option>
+                                    <option value="NAYAGARH">Nayagarh</option>
+                                    <option value="NUAPADA">Nuapada</option>
+                                    <option value="PURI">Puri</option>
+                                    <option value="RAYAGADA">Rayagada</option>
+                                    <option value="SAMBALPUR">Sambalpur</option>
+                                    <option value="SUBARNAPUR">Subarnapur</option>
+                                    <option value="SUNDARGARH">Sundargarh</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                    <i class="fa-solid fa-chevron-down text-slate-400 text-sm"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Admin PIN</label>
+                            <input type="password" id="login-pin" required class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-shadow bg-slate-50" placeholder="Enter security PIN">
+                            <p class="text-xs text-slate-400 mt-2"><i class="fa-solid fa-circle-info"></i> For demo, PIN is DistrictName + "123" (e.g., CUTTACK123)</p>
+                        </div>
+
+                        <div id="login-error" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3">
+                            <i class="fa-solid fa-circle-exclamation mr-1"></i> Incorrect District or PIN.
+                        </div>
+
+                        <button type="submit" class="w-full py-3 bg-slate-900 text-white rounded-xl hover:bg-slate-800 font-bold shadow-lg shadow-slate-200 transition-all">
+                            Access Dashboard <i class="fa-solid fa-arrow-right ml-2"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. DASHBOARD SECTION -->
+        <section id="section-dashboard" class="hidden">
+            <!-- Header Banner -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-3">
+                        <i class="fa-solid fa-map-location-dot text-rose-500"></i> 
+                        <span id="display-district-name">DISTRICT</span> Data Management
+                    </h1>
+                    <p class="text-slate-500 text-sm mt-1">Review nominations, verify proof, and remove false entries.</p>
+                </div>
+                <div class="flex gap-4">
+                    <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 text-center min-w-[120px]">
+                        <p class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">Entries</p>
+                        <p class="text-2xl font-black text-blue-700" id="stat-entries">0</p>
+                    </div>
+                    <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-4 text-center min-w-[120px]">
+                        <p class="text-xs font-bold text-emerald-600 uppercase tracking-wider mb-1">Enrolled</p>
+                        <p class="text-2xl font-black text-emerald-700" id="stat-enrolled">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Table -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                
+                <!-- Loading State -->
+                <div id="table-loading" class="py-20 flex flex-col items-center justify-center text-slate-400">
+                    <div class="w-10 h-10 border-4 border-slate-200 loader rounded-full mb-4"></div>
+                    <p>Loading district data...</p>
+                </div>
+
+                <!-- Empty State -->
+                <div id="table-empty" class="hidden py-20 flex flex-col items-center justify-center text-slate-400">
+                    <i class="fa-solid fa-folder-open text-5xl mb-4 text-slate-300"></i>
+                    <p class="text-lg">No nominations found for this district.</p>
+                </div>
+
+                <!-- Actual Table -->
+                <div id="table-container" class="hidden overflow-x-auto">
+                    <table class="w-full text-left border-collapse whitespace-nowrap">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-600 text-sm uppercase tracking-wider border-b border-slate-200">
+                                <th class="p-4 font-semibold w-16 text-center">Rank</th>
+                                <th class="p-4 font-semibold">Teacher Name</th>
+                                <th class="p-4 font-semibold">School (UDISE)</th>
+                                <th class="p-4 font-semibold">Block / Cluster</th>
+                                <th class="p-4 font-semibold text-center">Enrollments</th>
+                                <th class="p-4 font-semibold text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-tbody" class="divide-y divide-slate-100 bg-white">
+                            <!-- Dynamic rows injected here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODALS -->
+
+    <!-- Details Modal -->
+    <div id="modal-details" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden transform transition-all">
+            <!-- Modal Header -->
+            <div class="bg-slate-900 px-6 py-4 flex justify-between items-center shrink-0">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-address-card text-blue-400"></i> Nomination Details
+                </h3>
+                <button class="close-details-modal text-slate-400 hover:text-white transition-colors">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            
+            <!-- Modal Body (Scrollable) -->
+            <div class="p-6 overflow-y-auto" id="details-content">
+                <!-- Content injected via JS -->
+            </div>
+            
+            <!-- Modal Footer -->
+            <div class="bg-slate-50 px-6 py-4 border-t border-slate-200 flex justify-end shrink-0">
+                <button class="close-details-modal px-6 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 font-bold transition-colors">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="modal-delete" class="fixed inset-0 z-[110] hidden flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center transform transition-all border-t-4 border-red-500">
+            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center text-red-500 text-3xl mx-auto mb-4">
+                <i class="fa-solid fa-trash-can"></i>
+            </div>
+            <h3 class="text-xl font-bold text-slate-800 mb-2">Delete Entry?</h3>
+            <p class="text-slate-600 text-sm mb-6">Are you sure you want to permanently delete this nomination? This action cannot be undone.</p>
+            <div class="flex gap-3 justify-center">
+                <button id="btn-cancel-delete" class="px-5 py-2.5 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 font-bold transition-colors flex-1">
+                    Cancel
+                </button>
+                <button id="btn-confirm-delete" class="px-5 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 font-bold transition-colors shadow-md flex-1 flex justify-center items-center gap-2">
+                    <span>Delete</span>
+                    <i class="fa-solid fa-circle-notch fa-spin hidden" id="delete-spinner"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="admin-toast" class="fixed bottom-6 right-6 max-w-sm w-full bg-slate-800 text-white rounded-xl shadow-2xl p-4 z-[120] flex items-center gap-3 transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none">
+        <i class="fa-solid fa-circle-check text-green-400 text-xl" id="toast-icon"></i>
+        <p id="toast-message" class="font-medium flex-grow">Success message here</p>
+    </div>
+
+    <!-- APPLICATION LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Environment variables
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'nlp-portal-demo';
+        
+        // Exact same config as the main site
+        const firebaseConfig = typeof __firebase_config !== 'undefined' 
+            ? JSON.parse(__firebase_config) 
+            : {
+                apiKey: "AIzaSyD3HN5SCXq0dQ94wP73PHTJdwjNVAJOJm8",
+                authDomain: "livequizapp-5e433.firebaseapp.com",
+                databaseURL: "https://livequizapp-5e433-default-rtdb.firebaseio.com",
+                projectId: "livequizapp-5e433",
+                storageBucket: "livequizapp-5e433.firebasestorage.app",
+                messagingSenderId: "393541118458",
+                appId: "1:393541118458:web:76620000b8f08e87561c43"
+            };
+
+        // State
+        let app, db, auth;
+        let currentUser = null;
+        let currentAdminDistrict = null; 
+        let rawNominations = []; // All data from Firestore
+        let districtNominations = []; // Filtered data for the logged-in admin
+        let unsubscribeSnapshot = null;
+        let documentToDelete = null;
+
+        // UI Elements
+        const authStatusEl = document.getElementById('auth-status');
+        const sectionLogin = document.getElementById('section-login');
+        const sectionDashboard = document.getElementById('section-dashboard');
+        const loginForm = document.getElementById('login-form');
+        const loginError = document.getElementById('login-error');
+        const btnLogout = document.getElementById('btn-logout');
+        
+        // Table Elements
+        const tableLoading = document.getElementById('table-loading');
+        const tableEmpty = document.getElementById('table-empty');
+        const tableContainer = document.getElementById('table-container');
+        const adminTbody = document.getElementById('admin-tbody');
+        const statEntries = document.getElementById('stat-entries');
+        const statEnrolled = document.getElementById('stat-enrolled');
+        const displayDistrictName = document.getElementById('display-district-name');
+
+        // Modal Elements
+        const modalDetails = document.getElementById('modal-details');
+        const detailsContent = document.getElementById('details-content');
+        const modalDelete = document.getElementById('modal-delete');
+        const btnConfirmDelete = document.getElementById('btn-confirm-delete');
+        const deleteSpinner = document.getElementById('delete-spinner');
+
+        // ----------------------------------------------------------------------
+        // Initialization
+        // ----------------------------------------------------------------------
+        async function initAdminApp() {
+            try {
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                // Admin portal also needs auth to access Firestore rules. 
+                // Using anonymous or injected token.
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        currentUser = user;
+                        updateAuthStatus('Database Connected', 'bg-emerald-900 text-emerald-300', 'fa-link');
+                    } else {
+                        currentUser = null;
+                        updateAuthStatus('Disconnected', 'bg-red-900 text-red-300', 'fa-link-slash');
+                    }
+                });
+            } catch (error) {
+                console.error("Firebase Init Error:", error);
+                updateAuthStatus('Connection Error', 'bg-red-900 text-red-300', 'fa-triangle-exclamation');
+            }
+        }
+
+        function updateAuthStatus(text, classes, icon) {
+            authStatusEl.className = `text-xs font-medium px-3 py-1 rounded-full flex items-center gap-2 border border-slate-700 ${classes}`;
+            authStatusEl.innerHTML = `<i class="fa-solid ${icon}"></i> ${text}`;
+        }
+
+        // ----------------------------------------------------------------------
+        // Authentication (Simulated PIN for Prototype)
+        // ----------------------------------------------------------------------
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const selectedDistrict = document.getElementById('login-district').value;
+            const enteredPin = document.getElementById('login-pin').value;
+            
+            // SECURITY NOTE: Client-side PIN validation is strictly for prototyping.
+            // A production app should use Firebase Custom Claims or a private admin collection.
+            const expectedPin = selectedDistrict + "123"; 
+            const masterPin = "NLP2026"; // Override pin just in case
+
+            if (enteredPin === expectedPin || enteredPin === masterPin) {
+                // Success
+                loginError.classList.add('hidden');
+                currentAdminDistrict = selectedDistrict;
+                
+                // Update UI
+                displayDistrictName.textContent = currentAdminDistrict;
+                sectionLogin.classList.add('hidden');
+                sectionDashboard.classList.remove('hidden');
+                btnLogout.classList.remove('hidden');
+                
+                // Start listening to data
+                startDataListener();
+            } else {
+                // Fail
+                loginError.classList.remove('hidden');
+            }
+        });
+
+        btnLogout.addEventListener('click', () => {
+            if(unsubscribeSnapshot) unsubscribeSnapshot(); // Stop listening
+            currentAdminDistrict = null;
+            document.getElementById('login-pin').value = '';
+            
+            sectionDashboard.classList.add('hidden');
+            sectionLogin.classList.remove('hidden');
+            btnLogout.classList.add('hidden');
+        });
+
+        // ----------------------------------------------------------------------
+        // Data Fetching & Rendering
+        // ----------------------------------------------------------------------
+        function startDataListener() {
+            if (!currentUser || !currentAdminDistrict) return;
+
+            tableLoading.classList.remove('hidden');
+            tableContainer.classList.add('hidden');
+            tableEmpty.classList.add('hidden');
+
+            const nomsRef = collection(db, 'artifacts', appId, 'public', 'data', 'nominations');
+            
+            unsubscribeSnapshot = onSnapshot(nomsRef, (snapshot) => {
+                rawNominations = [];
+                snapshot.forEach((doc) => {
+                    rawNominations.push({ id: doc.id, ...doc.data() });
+                });
+                
+                // Filter strictly for this admin's district
+                districtNominations = rawNominations.filter(n => n.district === currentAdminDistrict);
+                
+                renderTable();
+            }, (error) => {
+                console.error("Snapshot error:", error);
+                showToast("Failed to fetch data.", "error");
+            });
+        }
+
+        function renderTable() {
+            tableLoading.classList.add('hidden');
+            
+            if (districtNominations.length === 0) {
+                tableContainer.classList.add('hidden');
+                tableEmpty.classList.remove('hidden');
+                statEntries.textContent = "0";
+                statEnrolled.textContent = "0";
+                return;
+            }
+
+            tableEmpty.classList.add('hidden');
+            tableContainer.classList.remove('hidden');
+
+            // Sort by enrollment descending (like the leaderboard)
+            districtNominations.sort((a, b) => Number(b.learnersEnrolled) - Number(a.learnersEnrolled));
+
+            // Calculate stats
+            let totalEnrolled = 0;
+            adminTbody.innerHTML = '';
+
+            districtNominations.forEach((nom, index) => {
+                totalEnrolled += Number(nom.learnersEnrolled) || 0;
+                
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition-colors group";
+                
+                // Base64 avatar or placeholder
+                const avatar = nom.photoData 
+                    ? `<img src="${nom.photoData}" class="w-10 h-10 rounded-full object-cover shadow-sm border border-slate-200">`
+                    : `<div class="w-10 h-10 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center font-bold shadow-sm"><i class="fa-solid fa-user"></i></div>`;
+
+                tr.innerHTML = `
+                    <td class="p-4 border-b border-slate-100 text-center font-bold text-slate-500">${index + 1}</td>
+                    <td class="p-4 border-b border-slate-100">
+                        <div class="flex items-center gap-3">
+                            ${avatar}
+                            <div>
+                                <div class="font-bold text-slate-800">${nom.teacherName}</div>
+                                <div class="text-xs text-slate-500"><i class="fa-solid fa-phone mr-1"></i>${nom.phone}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-4 border-b border-slate-100">
+                        <div class="font-semibold text-slate-700">${nom.schoolName}</div>
+                        <div class="text-xs font-mono text-slate-500 mt-0.5">UDISE: ${nom.udiseCode}</div>
+                    </td>
+                    <td class="p-4 border-b border-slate-100 text-sm text-slate-600">
+                        <div class="font-medium">${nom.block}</div>
+                        <div class="text-xs text-slate-400">${nom.cluster}</div>
+                    </td>
+                    <td class="p-4 border-b border-slate-100 text-center">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-emerald-100 text-emerald-800">
+                            ${nom.learnersEnrolled}
+                        </span>
+                    </td>
+                    <td class="p-4 border-b border-slate-100 text-center">
+                        <div class="flex justify-center gap-2">
+                            <button class="btn-view-details p-2 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg transition-colors border border-blue-100" data-id="${nom.id}" title="View Details">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                            <button class="btn-delete p-2 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-lg transition-colors border border-red-100" data-id="${nom.id}" title="Delete Entry">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                adminTbody.appendChild(tr);
+            });
+
+            // Update Header Stats
+            statEntries.textContent = districtNominations.length;
+            statEnrolled.textContent = totalEnrolled;
+        }
+
+        // ----------------------------------------------------------------------
+        // Modals & Actions (View / Delete)
+        // ----------------------------------------------------------------------
+        
+        // Listen to clicks on the dynamically generated table
+        adminTbody.addEventListener('click', (e) => {
+            const btnView = e.target.closest('.btn-view-details');
+            const btnDelete = e.target.closest('.btn-delete');
+
+            if (btnView) {
+                openDetailsModal(btnView.dataset.id);
+            } else if (btnDelete) {
+                openDeleteModal(btnDelete.dataset.id);
+            }
+        });
+
+        // VIEW DETAILS LOGIC
+        function openDetailsModal(docId) {
+            const nom = districtNominations.find(n => n.id === docId);
+            if(!nom) return;
+
+            // Format date if available
+            let dateStr = "N/A";
+            if (nom.createdAt && nom.createdAt.toDate) {
+                dateStr = nom.createdAt.toDate().toLocaleString('en-IN');
+            }
+
+            const imgPhoto = nom.photoData ? `<img src="${nom.photoData}" class="w-24 h-24 rounded-xl object-cover border-2 border-slate-200 shadow-sm mx-auto md:mx-0">` : `<div class="w-24 h-24 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 mx-auto md:mx-0"><i class="fa-solid fa-image text-3xl"></i></div>`;
+            
+            const imgProof = nom.proofData ? `<img src="${nom.proofData}" class="w-full max-w-sm rounded-xl object-contain border border-slate-200 shadow-sm">` : `<div class="p-8 bg-slate-50 border border-slate-200 rounded-xl text-center text-slate-400"><i class="fa-solid fa-image-slash text-3xl mb-2"></i><br>No screenshot provided</div>`;
+
+            detailsContent.innerHTML = `
+                <div class="flex flex-col md:flex-row gap-6 mb-8">
+                    <div class="shrink-0 text-center md:text-left">
+                        ${imgPhoto}
+                    </div>
+                    <div class="flex-grow">
+                        <h2 class="text-2xl font-bold text-slate-800">${nom.teacherName}</h2>
+                        <div class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-4 text-sm">
+                            <p class="text-slate-600"><i class="fa-solid fa-phone w-5 text-slate-400"></i> <strong class="text-slate-800">${nom.phone}</strong></p>
+                            <p class="text-slate-600"><i class="fa-solid fa-calendar w-5 text-slate-400"></i> Submitted: ${dateStr}</p>
+                            <p class="text-slate-600"><i class="fa-solid fa-users w-5 text-slate-400"></i> Enrolled: <strong class="text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">${nom.learnersEnrolled}</strong></p>
+                            <p class="text-slate-600"><i class="fa-solid fa-fingerprint w-5 text-slate-400"></i> ID: <span class="text-xs font-mono">${nom.id}</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                        <h4 class="font-bold text-slate-700 border-b border-slate-200 pb-2 mb-3">School Information</h4>
+                        <div class="space-y-3 text-sm">
+                            <div><span class="text-slate-500 block text-xs uppercase tracking-wider">School Name</span> <strong class="text-slate-800 text-base">${nom.schoolName}</strong></div>
+                            <div><span class="text-slate-500 block text-xs uppercase tracking-wider">UDISE Code</span> <strong class="font-mono text-slate-700">${nom.udiseCode}</strong></div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                        <h4 class="font-bold text-slate-700 border-b border-slate-200 pb-2 mb-3">Location Structure</h4>
+                        <div class="space-y-3 text-sm">
+                            <div><span class="text-slate-500 block text-xs uppercase tracking-wider">District</span> <strong class="text-slate-800">${nom.district}</strong></div>
+                            <div><span class="text-slate-500 block text-xs uppercase tracking-wider">Block</span> <strong class="text-slate-800">${nom.block}</strong></div>
+                            <div><span class="text-slate-500 block text-xs uppercase tracking-wider">Cluster</span> <strong class="text-slate-800">${nom.cluster}</strong></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-slate-700 border-b border-slate-200 pb-2 mb-4">NLP Application Screenshot (Proof)</h4>
+                    <div class="flex justify-center bg-slate-100 p-4 rounded-xl border border-slate-200">
+                        ${imgProof}
+                    </div>
+                </div>
+            `;
+            modalDetails.classList.remove('hidden');
+        }
+
+        // Close details modal
+        document.querySelectorAll('.close-details-modal').forEach(btn => {
+            btn.addEventListener('click', () => modalDetails.classList.add('hidden'));
+        });
+
+
+        // DELETE LOGIC
+        function openDeleteModal(docId) {
+            documentToDelete = docId;
+            modalDelete.classList.remove('hidden');
+        }
+
+        document.getElementById('btn-cancel-delete').addEventListener('click', () => {
+            modalDelete.classList.add('hidden');
+            documentToDelete = null;
+        });
+
+        btnConfirmDelete.addEventListener('click', async () => {
+            if(!documentToDelete || !currentUser) return;
+
+            btnConfirmDelete.disabled = true;
+            deleteSpinner.classList.remove('hidden');
+
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'nominations', documentToDelete);
+                await deleteDoc(docRef);
+                
+                modalDelete.classList.add('hidden');
+                showToast("Entry successfully deleted.", "success");
+            } catch (error) {
+                console.error("Error deleting document: ", error);
+                showToast("Failed to delete entry.", "error");
+            } finally {
+                btnConfirmDelete.disabled = false;
+                deleteSpinner.classList.add('hidden');
+                documentToDelete = null;
+            }
+        });
+
+
+        // TOAST NOTIFICATION
+        function showToast(message, type = "success") {
+            const toast = document.getElementById('admin-toast');
+            const msgEl = document.getElementById('toast-message');
+            const iconEl = document.getElementById('toast-icon');
+
+            msgEl.textContent = message;
+            
+            if (type === "success") {
+                toast.classList.replace('bg-red-800', 'bg-slate-800');
+                iconEl.className = "fa-solid fa-circle-check text-green-400 text-xl";
+            } else {
+                toast.classList.replace('bg-slate-800', 'bg-red-800');
+                iconEl.className = "fa-solid fa-circle-exclamation text-red-300 text-xl";
+            }
+
+            toast.classList.remove('opacity-0', 'translate-y-20', 'pointer-events-none');
+            toast.classList.add('opacity-100', 'translate-y-0');
+
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', 'translate-y-20', 'pointer-events-none');
+            }, 3000);
+        }
+
+        // Run
+        window.addEventListener('DOMContentLoaded', initAdminApp);
+
+    </script>
+</body>
+</html>
