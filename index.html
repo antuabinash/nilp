@@ -115,7 +115,7 @@
         <div class="mb-6 flex justify-center">
             <div class="bg-red-50 border border-red-200 text-red-700 px-6 py-3 rounded-full shadow-sm flex items-center gap-3 animate-pulse">
                 <i class="fa-solid fa-bell text-red-500 text-lg"></i>
-                <span class="font-semibold">ଆବେଦନ କରିବାର ଶେଷ ତାରିଖ: <span class="font-bold underline decoration-red-400">ଅଗଷ୍ଟ ୩୧, ୨୦୨୬ (August 31, 2026)</span></span>
+                <span class="font-semibold">ଆବେଦନ କରିବାର ଶେଷ ତାରିଖ: <span id="global-deadline-badge" class="font-bold underline decoration-red-400">ଅଗଷ୍ଟ ୩୧, ୨୦୨୬ (August 31, 2026)</span></span>
             </div>
         </div>
 
@@ -339,8 +339,8 @@
                     </div>
                     <h2 class="text-2xl font-bold text-slate-800 mb-3">ଦୟାକରି ଅପେକ୍ଷା କରନ୍ତୁ (Please Wait)</h2>
                     <p class="text-slate-600 max-w-md mx-auto">
-                        ଆବେଦନ ପ୍ରକ୍ରିୟା ଶେଷ ହେବା ପରେ ଅର୍ଥାତ୍ <strong class="text-slate-800">ଅଗଷ୍ଟ ୩୧, ୨୦୨୬</strong> ପରେ ସାର୍ଟିଫିକେଟ୍ ଉପଲବ୍ଧ ହେବ | ଦୟାକରି ସେହି ସମୟ ପରେ ପୁନର୍ବାର ଚେଷ୍ଟା କରନ୍ତୁ |
-                        <br/><span class="text-sm mt-2 block text-slate-500">(Certificates will be available after August 31, 2026)</span>
+                        ଆବେଦନ ପ୍ରକ୍ରିୟା ଶେଷ ହେବା ପରେ ଅର୍ଥାତ୍ <strong id="global-deadline-text-odia" class="text-slate-800">ଅଗଷ୍ଟ ୩୧, ୨୦୨୬</strong> ପରେ ସାର୍ଟିଫିକେଟ୍ ଉପଲବ୍ଧ ହେବ | ଦୟାକରି ସେହି ସମୟ ପରେ ପୁନର୍ବାର ଚେଷ୍ଟା କରନ୍ତୁ |
+                        <br/><span id="global-deadline-text-eng" class="text-sm mt-2 block text-slate-500">(Certificates will be available after August 31, 2026)</span>
                     </p>
                 </div>
 
@@ -491,7 +491,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, doc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Environment variables
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'nlp-portal-demo';
@@ -540,18 +540,31 @@
         // Leaderboard Elements
         const districtSelect = document.getElementById('district-select');
         const districtTotal = document.getElementById('district-total');
+        const totalLabel = document.getElementById('total-label');
         const leaderboardLoading = document.getElementById('leaderboard-loading');
         const leaderboardEmpty = document.getElementById('leaderboard-empty');
         const districtViewContainer = document.getElementById('district-view-container');
-        const teacherViewContainer = document.getElementById('teacher-view-container');
         const districtTbody = document.getElementById('district-tbody');
+        const teacherViewContainer = document.getElementById('teacher-view-container');
         const leaderboardTbody = document.getElementById('leaderboard-tbody');
-        const totalLabel = document.getElementById('total-label');
 
-        // Odisha District Map for translation
+        // District Translations Mapping
         const odishaDistricts = {
-            "ANGUL": "Angul (ଅନୁଗୋଳ)", "BALANGIR": "Balangir (ବଲାଙ୍ଗୀର)", "BALASORE": "Balasore (ବାଲେଶ୍ୱର)", "BARGARH": "Bargarh (ବରଗଡ଼)", "BHADRAK": "Bhadrak (ଭଦ୍ରକ)", "BOUDH": "Boudh (ବୌଦ୍ଧ)", "CUTTACK": "Cuttack (କଟକ)", "DEOGARH": "Deogarh (ଦେବଗଡ଼)", "DHENKANAL": "Dhenkanal (ଢେଙ୍କାନାଳ)", "GAJAPATI": "Gajapati (ଗଜପତି)", "GANJAM": "Ganjam (ଗଞ୍ଜାମ)", "JAGATSINGHPUR": "Jagatsinghpur (ଜଗତସିଂହପୁର)", "JAJPUR": "Jajpur (ଯାଜପୁର)", "JHARSUGUDA": "Jharsuguda (ଝାରସୁଗୁଡ଼ା)", "KALAHANDI": "Kalahandi (କଳାହାଣ୍ଡି)", "KANDHAMAL": "Kandhamal (କନ୍ଧମାଳ)", "KENDRAPARA": "Kendrapara (କେନ୍ଦ୍ରାପଡ଼ା)", "KEONJHAR": "Keonjhar (କେନ୍ଦୁଝର)", "KHORDHA": "Khordha (ଖୋର୍ଦ୍ଧା)", "KORAPUT": "Koraput (କୋରାପୁଟ)", "MALKANGIRI": "Malkangiri (ମାଲକାନଗିରି)", "MAYURBHANJ": "Mayurbhanj (ମୟୂରଭଞ୍ଜ)", "NABARANGPUR": "Nabarangpur (ନବରଙ୍ଗପୁର)", "NAYAGARH": "Nayagarh (ନୟାଗଡ଼)", "NUAPADA": "Nuapada (ନୂଆପଡ଼ା)", "PURI": "Puri (ପୁରୀ)", "RAYAGADA": "Rayagada (ରାୟଗଡ଼ା)", "SAMBALPUR": "Sambalpur (ସମ୍ବଲପୁର)", "SUBARNAPUR": "Subarnapur (ସୁବର୍ଣ୍ଣପୁର)", "SUNDARGARH": "Sundargarh (ସୁନ୍ଦରଗଡ଼)"
+            "ANGUL": "Angul (ଅନୁଗୋଳ)", "BALANGIR": "Balangir (ବଲାଙ୍ଗୀର)", "BALASORE": "Balasore (ବାଲେଶ୍ୱର)", 
+            "BARGARH": "Bargarh (ବରଗଡ଼)", "BHADRAK": "Bhadrak (ଭଦ୍ରକ)", "BOUDH": "Boudh (ବୌଦ୍ଧ)", 
+            "CUTTACK": "Cuttack (କଟକ)", "DEOGARH": "Deogarh (ଦେବଗଡ଼)", "DHENKANAL": "Dhenkanal (ଢେଙ୍କାନାଳ)", 
+            "GAJAPATI": "Gajapati (ଗଜପତି)", "GANJAM": "Ganjam (ଗଞ୍ଜାମ)", "JAGATSINGHPUR": "Jagatsinghpur (ଜଗତସିଂହପୁର)", 
+            "JAJPUR": "Jajpur (ଯାଜପୁର)", "JHARSUGUDA": "Jharsuguda (ଝାରସୁଗୁଡ଼ା)", "KALAHANDI": "Kalahandi (କଳାହାଣ୍ଡି)", 
+            "KANDHAMAL": "Kandhamal (କନ୍ଧମାଳ)", "KENDRAPARA": "Kendrapara (କେନ୍ଦ୍ରାପଡ଼ା)", "KEONJHAR": "Keonjhar (କେନ୍ଦୁଝର)", 
+            "KHORDHA": "Khordha (ଖୋର୍ଦ୍ଧା)", "KORAPUT": "Koraput (କୋରାପୁଟ)", "MALKANGIRI": "Malkangiri (ମାଲକାନଗିରି)", 
+            "MAYURBHANJ": "Mayurbhanj (ମୟୂରଭଞ୍ଜ)", "NABARANGPUR": "Nabarangpur (ନବରଙ୍ଗପୁର)", "NAYAGARH": "Nayagarh (ନୟାଗଡ଼)", 
+            "NUAPADA": "Nuapada (ନୂଆପଡ଼ା)", "PURI": "Puri (ପୁରୀ)", "RAYAGADA": "Rayagada (ରାୟଗଡ଼ା)", 
+            "SAMBALPUR": "Sambalpur (ସମ୍ବଲପୁର)", "SUBARNAPUR": "Subarnapur (ସୁବର୍ଣ୍ଣପୁର)", "SUNDARGARH": "Sundargarh (ସୁନ୍ଦରଗଡ଼)"
         };
+
+        // Certificate Date State
+        let CERTIFICATE_RELEASE_DATE = new Date('2026-09-01T00:00:00');
+        let forceBypassDate = false;
 
         // ----------------------------------------------------------------------
         // Initialization & Auth
@@ -609,15 +622,15 @@
             authStatusEl.className = `text-xs font-medium px-3 py-1 rounded-full flex items-center gap-2 ${classes}`;
             authStatusEl.innerHTML = `<i class="fa-solid ${icon}"></i> ${text}`;
         }
-
-        // ----------------------------------------------------------------------
-        // Data Handling
+        // Data Handling (Rule 1 & 2: Strict Paths, No Complex Queries)
         // ----------------------------------------------------------------------
         function setupRealtimeListener() {
             if (!currentUser) return;
 
+            // Strict Path: /artifacts/{appId}/public/data/nominations
             const nomsRef = collection(db, 'artifacts', appId, 'public', 'data', 'nominations');
             
+            // Listen to all documents, process in JS
             onSnapshot(nomsRef, (snapshot) => {
                 allNominations = [];
                 snapshot.forEach((doc) => {
@@ -636,7 +649,31 @@
                 }
             }, (error) => {
                 console.error("Snapshot error:", error);
-                showToast('ଡାଟା ତ୍ରୁଟି (Data Error)', 'ଲାଇଭ୍ ଡାଟା ଲୋଡ୍ କରିପାରିଲା ନାହିଁ |', 'error');
+                showToast('Data Error', 'Could not load live data.', 'error');
+            });
+            
+            // Listen to Global Settings (For dynamic date changes)
+            const configRef = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'config');
+            onSnapshot(configRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    
+                    // Update Date Logic (Certificates available the day AFTER the deadline)
+                    if(data.deadlineDate) {
+                        const d = new Date(data.deadlineDate);
+                        d.setDate(d.getDate() + 1); // Unlock at midnight the following day
+                        CERTIFICATE_RELEASE_DATE = d;
+                    }
+                    
+                    // Update UI Text
+                    if(data.deadlineTextOdia && data.deadlineTextEng) {
+                        document.getElementById('global-deadline-badge').innerHTML = `${data.deadlineTextOdia} <span class="font-normal text-sm">(${data.deadlineTextEng})</span>`;
+                        document.getElementById('global-deadline-text-odia').textContent = data.deadlineTextOdia;
+                        document.getElementById('global-deadline-text-eng').textContent = `(Certificates will be available after ${data.deadlineTextEng})`;
+                    }
+                }
+            }, (error) => {
+                console.warn("Could not load config file (Might not exist yet)");
             });
         }
 
@@ -688,22 +725,12 @@
             btnShowLeaderboard.classList.add('ring-4', 'ring-emerald-100');
         });
 
-        btnSuccessLeaderboard.addEventListener('click', () => {
-            btnShowLeaderboard.click();
-        });
-
-        // ----------------------------------------------------------------------
         // Certificate Download Logic
-        // ----------------------------------------------------------------------
         const certViewEarly = document.getElementById('cert-view-early');
         const certViewForm = document.getElementById('cert-view-form');
         const certViewResult = document.getElementById('cert-view-result');
         const certVerifyForm = document.getElementById('cert-verify-form');
         const devBypassBtn = document.getElementById('dev-bypass-btn');
-        
-        // Set the release date (Midnight, September 1, 2026)
-        const CERTIFICATE_RELEASE_DATE = new Date('2026-09-01T00:00:00');
-        let forceBypassDate = false; // For developer testing
 
         btnShowCertificate.addEventListener('click', () => {
             hideAllSections();
